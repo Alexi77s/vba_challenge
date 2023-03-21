@@ -1,0 +1,137 @@
+Sub Homework_2()
+
+
+'looping
+For Each ws In Worksheets
+
+    Dim worksheet_pages As String
+    
+    'Prices and % changes need new variables
+    Dim i As Long
+    Dim j As Long
+    Dim ticker As Long
+    Dim LastRow As Long
+    Dim LastRowK As Long
+    Dim percent_change As Double
+    Dim GreatIn As Double
+    Dim GreatDe As Double
+    Dim Great_volume As Double
+    
+
+    
+
+    'headings
+    ws.Range("K1").Value = "Ticker"
+    ws.Range("L1").Value = "Yearly Change"
+    ws.Range("M1").Value = "Percent Change"
+    ws.Range("N1").Value = "Total Stock Volume"
+    
+    'set ticker for the rows
+    ticker = 2
+    j = 2
+
+
+'Must define the last row of the worksheet
+LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+
+
+    'loop lastrow
+    For i = 2 To LastRow
+
+    'Ticker output and calculating price change
+        If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+        ws.Cells(ticker, 11).Value = ws.Cells(i, 1).Value
+        ws.Cells(ticker, 12).Value = ws.Cells(i, 6).Value - ws.Cells(j, 3).Value
+
+            'setting the colors for conditional formatting
+            If ws.Cells(ticker, 12).Value < 0 Then
+            ws.Cells(ticker, 12).Interior.ColorIndex = 3
+            
+            Else
+            
+            ws.Cells(ticker, 12).Interior.ColorIndex = 4
+            
+            End If
+            
+            'calcualter percent change
+            If ws.Cells(j, 3).Value <> 0 Then
+            percent_change = ((ws.Cells(i, 6).Value - ws.Cells(j, 3).Value) / ws.Cells(j, 3).Value)
+            ws.Cells(ticker, 13).Value = Format(percent_change, "Percent")
+            
+            Else
+            
+            ws.Cells(ticker, 13).Value = Format(0, "Perent")
+            
+            End If
+            
+            
+        'Calculate the total volume
+        ws.Cells(ticker, 14).Value = WorksheetFunction.Sum(Range(ws.Cells(j, 7), ws.Cells(i, 7)))
+        'go to next ticker
+        ticker = ticker + 1
+        j = i + 1
+        End If
+        
+    Next i
+    
+'set last row of ticker in column K
+LastRowK = ws.Cells(Rows.Count, 11).End(xlUp).Row
+
+'Set up summary table
+Great_volume = ws.Cells(2, 14).Value
+GreatDe = ws.Cells(2, 13).Value
+GreatIn = ws.Cells(2, 13).Value
+
+    'loop
+    For i = 2 To LastRowK
+    
+        'to get greatest volume
+        If ws.Cells(i, 14).Value > Great_volume Then
+        Great_volume = Cells(i, 14).Value
+        ws.Cells(4, 18).Value = ws.Cells(i, 11).Value
+        
+        Else
+        
+        Great_volume = Great_volume
+        
+        End If
+        
+        'to get greatest increase
+        If ws.Cells(i, 13).Value > GreatIn Then
+        GreatIn = ws.Cells(i, 13).Value
+        ws.Cells(2, 18).Value = ws.Cells(i, 11).Value
+        
+        Else
+        
+        GreatIn = GreatIn
+        
+        End If
+        
+        'to get greatest decrease
+        If ws.Cells(i, 13).Value < GreatDe Then
+        GreatDe = ws.Cells(i, 13).Value
+        ws.Cells(3, 18).Value = ws.Cells(i, 11).Value
+        
+        Else
+        
+        GreatDe = GreatDe
+        
+        End If
+        
+    'Bonus heading results
+    ws.Range("R1").Value = "Ticker"
+    ws.Range("S1").Value = "Value"
+    ws.Range("Q2").Value = "Greatest % Increase"
+    ws.Range("Q3").Value = "Greated % Decrease"
+    ws.Range("Q4").Value = "Greatest Total Volume"
+    
+    ws.Cells(4, 19).Value = Format(Great_volume, "Scientific")
+    ws.Cells(3, 19).Value = Format(GreatDe, "Percent")
+    ws.Cells(2, 19).Value = Format(GreatIn, "Percent")
+    
+    Next i
+    
+Next ws
+
+End Sub
+
